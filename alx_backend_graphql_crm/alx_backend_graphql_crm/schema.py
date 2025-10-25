@@ -1,12 +1,7 @@
-# alx_backend_graphql_crm/schema.py
 import graphene
+from crm.schema import Mutation
 
-#  Define Query class
 class Query(graphene.ObjectType):
-    hello = graphene.String(description="Simple hello world field")
+    hello = graphene.String(default_value="Hello, GraphQL!")
 
-    def resolve_hello(self, info):
-        return "Hello, GraphQL!"
-
-# Create schema object
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=Query, mutation=Mutation)
