@@ -17,3 +17,11 @@ class Mutation(CRMMutation, graphene.ObjectType):
 
 # Create main schema
 schema = graphene.Schema(query=Query, mutation=Mutation)
+
+class Query(CRMQuery, graphene.ObjectType):
+    pass
+
+class Mutation(CRMMutation, graphene.ObjectType):
+    pass
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
