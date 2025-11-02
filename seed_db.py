@@ -9,7 +9,6 @@ sys.path.append(project_root)
 # Set Django settings module
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "alx_backend_graphql_crm.settings")
 django.setup()
-
 # Import your models
 from crm.models import Customer, Product
 
