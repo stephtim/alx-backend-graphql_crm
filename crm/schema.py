@@ -1,5 +1,8 @@
 import graphene
-from .models import Product
+from graphene_django import DjangoObjectType
+from crm.models import Product, Customer, Order  # Ensure this line exists and includes Product
+
+# --- Example: Mutation definition ---
 
 class UpdateLowStockProducts(graphene.Mutation):
     success = graphene.Boolean()
@@ -27,10 +30,3 @@ class UpdateLowStockProducts(graphene.Mutation):
                 message="No low-stock products found.",
                 updated_products=[]
             )
-
-class Mutation(graphene.ObjectType):
-    create_customer = CreateCustomer.Field()
-    bulk_create_customers = BulkCreateCustomers.Field()
-    create_product = CreateProduct.Field()
-    create_order = CreateOrder.Field()
-    update_low_stock_products = UpdateLowStockProducts.Field()
