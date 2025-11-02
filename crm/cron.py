@@ -1,26 +1,47 @@
 import datetime
-import requests
+import logging
+from gql import gql, Client
+from gql.transport.requests import RequestsHTTPTransport
+
+# Set up logging
+LOG_FILE = "/tmp/crm_heartbeat_log.txt"
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format="%(message)s")
 
 def log_crm_heartbeat():
-    """Logs a timestamped heartbeat message and optionally checks GraphQL hello."""
-    log_file = "/tmp/crm_heartbeat_log.txt"
+    """
+    Logs CRM heartbeat and checks GraphQL hello endpoint using gql.
+    """
     timestamp = datetime.datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
-    message = f"{timestamp} CRM is alive\n"
+    message = f"{timestamp} CRM is alive"
+    
+    # Append to log file
+    with open(LOG_FILE, "a") as f:
+        f.write(message + "\n")
 
-    # Append log
-    with open(log_file, "a") as f:
-        f.write(message)
+    # Set up the GraphQL transport
+    transport = RequestsHTTPTransport(
+        url="http://localhost:8000/graphql",
+        verify=False,
+        retries=3,
+    )
 
-    # Optional: verify GraphQL endpoint responsiveness
+    # Create GraphQL client
+    client = Client(transport=transport, fetch_schema_from_transport=True)
+
+    # Define GraphQL query
+    query = gql(
+        """
+        query {
+            hello
+        }
+        """
+    )
+
     try:
-        response = requests.post(
-            "http://localhost:8000/graphql",
-            json={"query": "{ hello }"},
-            timeout=5
-        )
-        if response.ok:
-            print("GraphQL hello response:", response.json())
-        else:
-            print("GraphQL endpoint not responding properly.")
+        response = client.execute(query)
+        logging.info(f"{timestamp} GraphQL hello response: {response}")
+        print("GraphQL hello response:", response)
     except Exception as e:
-        print("Error checking GraphQL:", e)
+        error_message = f"{timestamp} Error connecting to GraphQL: {e}"
+        logging.error(error_message)
+        print(error_message)
